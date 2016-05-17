@@ -1,25 +1,25 @@
 /*
-Copyright 2013 Jun Wako <wakojun@gmail.com>
+   Copyright 2013 Jun Wako <wakojun@gmail.com>
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 2 of the License, or
-(at your option) any later version.
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 2 of the License, or
+   (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   */
 #ifndef ACTION_CODE_H
 #define ACTION_CODE_H
 
 /* Action codes
  * ============
- * 16bit code: action_kind(4bit) + action_parameter(12bit)
+ * 32bit code: action_kind(4bit) + action_parameter(16bit)
  *
  *
  * Key Actions(00xx)
@@ -50,7 +50,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * ACT_MOUSEKEY(0110): TODO: Not needed?
  * 0101|xxxx| keycode     Mouse key
  *
- * 011x|xxxx xxxx xxxx    (reseved)
+ * 011x|xxxx xxxx xxxx    (reserved)
  *
  *
  * Layer Actions(10xx)
@@ -88,35 +88,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 1100|1111| id(8)      Macro record?
  *
  * ACT_BACKLIGHT(1101):
- * 1101|opt |level(8)    Backlight commands
- *
- * ACT_COMMAND(1110):
- * 1110|opt | id(8)      Built-in Command exec
- *
- * ACT_FUNCTION(1111):
- * 1111| address(12)     Function?
- * 1111|opt | id(8)      Function?
- */
+* 1101|opt |level(8)    Backlight commands
+*
+* ACT_COMMAND(1110):
+* 1110|opt | id(8)      Built-in Command exec
+*
+* ACT_FUNCTION(1111):
+* 1111| address(12)     Function?
+* 1111|opt | id(8)      Function?
+*/
 enum action_kind_id {
-    /* Key Actions */
-    ACT_MODS            = 0b0000,
-    ACT_LMODS           = 0b0000,
-    ACT_RMODS           = 0b0001,
-    ACT_MODS_TAP        = 0b0010,
-    ACT_LMODS_TAP       = 0b0010,
-    ACT_RMODS_TAP       = 0b0011,
-    /* Other Keys */
-    ACT_USAGE           = 0b0100,
-    ACT_MOUSEKEY        = 0b0101,
-    /* Layer Actions */
-    ACT_LAYER           = 0b1000,
-    ACT_LAYER_TAP       = 0b1010, /* Layer  0-15 */
-    ACT_LAYER_TAP_EXT   = 0b1011, /* Layer 16-31 */
-    /* Extensions */
-    ACT_MACRO           = 0b1100,
-    ACT_BACKLIGHT       = 0b1101,
-    ACT_COMMAND         = 0b1110,
-    ACT_FUNCTION        = 0b1111
+	/* Key Actions */
+	ACT_MODS            = 0b0000,
+	ACT_LMODS           = 0b0000,
+	ACT_RMODS           = 0b0001,
+	ACT_MODS_TAP        = 0b0010,
+	ACT_LMODS_TAP       = 0b0010,
+	ACT_RMODS_TAP       = 0b0011,
+	/* Other Keys */
+	ACT_USAGE           = 0b0100,
+	ACT_MOUSEKEY        = 0b0101,
+	/* Layer Actions */
+	ACT_LAYER           = 0b1000,
+	ACT_LAYER_TAP       = 0b1010, /* Layer  0-15 */
+	ACT_LAYER_TAP_EXT   = 0b1011, /* Layer 16-31 */
+	/* Extensions */
+	ACT_UNICODE         = 0b1001,
+	ACT_MACRO           = 0b1100,
+	ACT_BACKLIGHT       = 0b1101,
+	ACT_COMMAND         = 0b1110,
+	ACT_FUNCTION        = 0b1111
 };
 
 
@@ -135,56 +136,69 @@ enum action_kind_id {
  *     0x12       0x34            0x34       0x12
  */
 typedef union {
-    uint16_t code;
-    struct action_kind {
-        uint16_t param  :12;
-        uint8_t  id     :4;
-    } kind;
-    struct action_key {
-        uint8_t  code   :8;
-        uint8_t  mods   :4;
-        uint8_t  kind   :4;
-    } key;
-    struct action_layer_bitop {
-        uint8_t  bits   :4;
-        uint8_t  xbit   :1;
-        uint8_t  part   :3;
-        uint8_t  on     :2;
-        uint8_t  op     :2;
-        uint8_t  kind   :4;
-    } layer_bitop;
-    struct action_layer_tap {
-        uint8_t  code   :8;
-        uint8_t  val    :5;
-        uint8_t  kind   :3;
-    } layer_tap;
-    struct action_usage {
-        uint16_t code   :10;
-        uint8_t  page   :2;
-        uint8_t  kind   :4;
-    } usage;
-    struct action_backlight {
-        uint8_t  level  :8;
-        uint8_t  opt    :4;
-        uint8_t  kind   :4;
-    } backlight;
-    struct action_command {
-        uint8_t  id     :8;
-        uint8_t  opt    :4;
-        uint8_t  kind   :4;
-    } command;
-    struct action_function {
-        uint8_t  id     :8;
-        uint8_t  opt    :4;
-        uint8_t  kind   :4;
-    } func;
+	uint32_t code;
+	struct action_kind {
+		uint8_t  id     :4;
+		uint16_t param  :16;
+		uint16_t none   :12;
+	} kind;
+	struct action_key {
+		uint8_t  kind   :4;
+		uint8_t  code   :8;
+		uint8_t  mods   :4;
+		uint16_t none   :16;
+	} key;
+	struct action_layer_bitop {
+		uint8_t  kind   :4;
+		uint8_t  bits   :4;
+		uint8_t  xbit   :1;
+		uint8_t  part   :3;
+		uint8_t  on     :2;
+		uint8_t  op     :2;
+		uint16_t none   :16;
+	} layer_bitop;
+	struct action_layer_tap {
+		uint8_t  kind   :4;
+		uint8_t  code   :8;
+		uint8_t  val    :5;
+		uint16_t none   :15;
+	} layer_tap;
+	struct action_usage {
+		uint8_t  kind   :4;
+		uint16_t code   :10;
+		uint8_t  page   :2;
+		uint16_t none   :16;
+	} usage;
+	struct action_backlight {
+		uint8_t  kind   :4;
+		uint8_t  level  :8;
+		uint8_t  opt    :4;
+		uint16_t none   :16;
+	} backlight;
+	struct action_command {
+		uint8_t  kind   :4;
+		uint8_t  id     :8;
+		uint8_t  opt    :4;
+		uint16_t none   :16;
+	} command;
+	struct action_function {
+		uint8_t  kind   :4;
+		uint8_t  id     :8;
+		uint8_t  opt    :4;
+		uint16_t none   :16;
+	} func;
+	struct action_unicode {
+		uint8_t  kind   :4;
+		uint16_t code   :16;
+		uint16_t none   :12;
+	} unicode;
 } action_t;
 
 
 /* action utility */
 #define ACTION_NO                       0
 #define ACTION_TRANSPARENT              1
-#define ACTION(kind, param)             ((kind)<<12 | (param))
+#define ACTION(kind, param)             ((kind) | (param)<<4)
 
 
 /*
@@ -198,18 +212,18 @@ typedef union {
  *   bit 4      +----- LR flag(Left:0, Right:1)
  */
 enum mods_bit {
-    MOD_LCTL = 0x01,
-    MOD_LSFT = 0x02,
-    MOD_LALT = 0x04,
-    MOD_LGUI = 0x08,
-    MOD_RCTL = 0x11,
-    MOD_RSFT = 0x12,
-    MOD_RALT = 0x14,
-    MOD_RGUI = 0x18,
+	MOD_LCTL = 0x01,
+	MOD_LSFT = 0x02,
+	MOD_LALT = 0x04,
+	MOD_LGUI = 0x08,
+	MOD_RCTL = 0x11,
+	MOD_RSFT = 0x12,
+	MOD_RALT = 0x14,
+	MOD_RGUI = 0x18,
 };
 enum mods_codes {
-    MODS_ONESHOT = 0x00,
-    MODS_TAP_TOGGLE = 0x01,
+	MODS_ONESHOT = 0x00,
+	MODS_TAP_TOGGLE = 0x01,
 };
 #define ACTION_KEY(key)                 ACTION(ACT_MODS, (key))
 #define ACTION_MODS(mods)               ACTION(ACT_MODS, ((mods)&0x1f)<<8 | 0)
@@ -223,8 +237,8 @@ enum mods_codes {
  * Other Keys
  */
 enum usage_pages {
-    PAGE_SYSTEM,
-    PAGE_CONSUMER
+	PAGE_SYSTEM,
+	PAGE_CONSUMER
 };
 #define ACTION_USAGE_SYSTEM(id)         ACTION(ACT_USAGE, PAGE_SYSTEM<<10 | (id))
 #define ACTION_USAGE_CONSUMER(id)       ACTION(ACT_USAGE, PAGE_CONSUMER<<10 | (id))
@@ -232,26 +246,26 @@ enum usage_pages {
 
 
 
-/* 
+/*
  * Layer Actions
  */
 enum layer_param_on {
-    ON_PRESS    = 1,
-    ON_RELEASE  = 2,
-    ON_BOTH     = 3,
+	ON_PRESS    = 1,
+	ON_RELEASE  = 2,
+	ON_BOTH     = 3,
 };
 enum layer_param_bit_op {
-    OP_BIT_AND = 0,
-    OP_BIT_OR  = 1,
-    OP_BIT_XOR = 2,
-    OP_BIT_SET = 3,
+	OP_BIT_AND = 0,
+	OP_BIT_OR  = 1,
+	OP_BIT_XOR = 2,
+	OP_BIT_SET = 3,
 };
 enum layer_pram_tap_op {
-    OP_TAP_TOGGLE = 0xF0,
-    OP_ON_OFF,
-    OP_OFF_ON,
-    OP_SET_CLEAR,
-    OP_ONESHOT,
+	OP_TAP_TOGGLE = 0xF0,
+	OP_ON_OFF,
+	OP_OFF_ON,
+	OP_SET_CLEAR,
+	OP_ONESHOT,
 };
 #define ACTION_LAYER_BITOP(op, part, bits, on)      (ACT_LAYER<<12 | (op)<<10 | (on)<<8 | (part)<<5 | ((bits)&0x1f))
 #define ACTION_LAYER_TAP(layer, key)                (ACT_LAYER_TAP<<12 | (layer)<<8 | (key))
@@ -289,11 +303,11 @@ enum layer_pram_tap_op {
  * Extensions
  */
 enum backlight_opt {
-    BACKLIGHT_INCREASE = 0,
-    BACKLIGHT_DECREASE = 1,
-    BACKLIGHT_TOGGLE   = 2,
-    BACKLIGHT_STEP     = 3,
-    BACKLIGHT_LEVEL    = 4,
+	BACKLIGHT_INCREASE = 0,
+	BACKLIGHT_DECREASE = 1,
+	BACKLIGHT_TOGGLE   = 2,
+	BACKLIGHT_STEP     = 3,
+	BACKLIGHT_LEVEL    = 4,
 };
 /* Macro */
 #define ACTION_MACRO(id)                ACTION(ACT_MACRO, (id))
@@ -309,10 +323,11 @@ enum backlight_opt {
 #define ACTION_COMMAND(id, opt)         ACTION(ACT_COMMAND,  (opt)<<8 | (addr))
 /* Function */
 enum function_opts {
-    FUNC_TAP = 0x8,     /* indciates function is tappable */
+	FUNC_TAP = 0x8,     /* indicates function is tappable */
 };
 #define ACTION_FUNCTION(id)             ACTION(ACT_FUNCTION, (id))
 #define ACTION_FUNCTION_TAP(id)         ACTION(ACT_FUNCTION, FUNC_TAP<<8 | (id))
 #define ACTION_FUNCTION_OPT(id, opt)    ACTION(ACT_FUNCTION, (opt)<<8 | (id))
-
+/* Unicode */
+#define ACTION_UNICODE(n)            ACTION(ACT_UNICODE, (n))
 #endif /* ACTION_CODE_H */

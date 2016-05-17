@@ -17,7 +17,7 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
    For more info on how this works per OS, see here:
-   https://en.wikipedia.org/wiki/Unicode_input#Hexadecimal_code_input
+https://en.wikipedia.org/wiki/Unicode_input#Hexadecimal_code_input
 */
 
 #include "keymap_common.h"
@@ -37,45 +37,45 @@ uint16_t hex_to_keycode(uint8_t hex)
 	}
 }
 
-void send_unicode(keyrecord_t *record, uint8_t id, uint8_t opt)
+void action_unicode(uint16_t unicode)
 {
-	if (record->event.pressed) {
-		uint16_t unicode = (opt << 8) | id;
-		switch(input_mode) {
-			case UC_OSX:
-				register_code(KC_LALT);
-				break;
-			case UC_LNX:
-				register_code(KC_LCTL);
-				register_code(KC_LSFT);
-				register_code(KC_U);
-				unregister_code(KC_U);
-				break;
-			case UC_WIN:
-				register_code(KC_LALT);
-				register_code(KC_PPLS);
-				unregister_code(KC_PPLS);
-				break;
-		}
-		register_code(hex_to_keycode((unicode & 0xF000) >> 12));
-		unregister_code(hex_to_keycode((unicode & 0xF000) >> 12));
-		register_code(hex_to_keycode((unicode & 0x0F00) >> 8));
-		unregister_code(hex_to_keycode((unicode & 0x0F00) >> 8));
-		register_code(hex_to_keycode((unicode & 0x00F0) >> 4));
-		unregister_code(hex_to_keycode((unicode & 0x00F0) >> 4));
-		register_code(hex_to_keycode((unicode & 0x000F)));
-		unregister_code(hex_to_keycode((unicode & 0x000F)));
-		switch(input_mode) {
-			case UC_OSX:
-			case UC_WIN:
-				unregister_code(KC_LALT);
-				break;
-			case UC_LNX:
-				unregister_code(KC_LCTL);
-				unregister_code(KC_LSFT);
-				break;
-		}
+	dprintf("action_unicode");
+	//if (record->event.pressed) {
+	switch(input_mode) {
+		case UC_OSX:
+			register_code(KC_LALT);
+			break;
+		case UC_LNX:
+			register_code(KC_LCTL);
+			register_code(KC_LSFT);
+			register_code(KC_U);
+			unregister_code(KC_U);
+			break;
+		case UC_WIN:
+			register_code(KC_LALT);
+			register_code(KC_PPLS);
+			unregister_code(KC_PPLS);
+			break;
 	}
+	register_code(hex_to_keycode((unicode & 0xF000) >> 12));
+	unregister_code(hex_to_keycode((unicode & 0xF000) >> 12));
+	register_code(hex_to_keycode((unicode & 0x0F00) >> 8));
+	unregister_code(hex_to_keycode((unicode & 0x0F00) >> 8));
+	register_code(hex_to_keycode((unicode & 0x00F0) >> 4));
+	unregister_code(hex_to_keycode((unicode & 0x00F0) >> 4));
+	register_code(hex_to_keycode((unicode & 0x000F)));
+	unregister_code(hex_to_keycode((unicode & 0x000F)));
+	switch(input_mode) {
+		case UC_OSX:
+		case UC_WIN:
+			unregister_code(KC_LALT);
+			break;
+		case UC_LNX:
+			unregister_code(KC_LCTL);
+			unregister_code(KC_LSFT);
+			break;
+	}
+	//}
 }
 void set_unicode_mode(uint8_t os_target)
 {

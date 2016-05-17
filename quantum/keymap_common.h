@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* NOTE: Not portable. Bit field order depends on implementation */
 typedef union {
-    uint16_t raw;
+    uint32_t raw;
     struct {
         bool swap_control_capslock:1;
         bool capslock_to_control:1;
@@ -47,7 +47,7 @@ typedef union {
 
 
 /* translates key to keycode */
-uint16_t keymap_key_to_keycode(uint8_t layer, keypos_t key);
+uint32_t keymap_key_to_keycode(uint8_t layer, keypos_t key);
 
 /* translates Fn keycode to action */
 action_t keymap_fn_to_action(uint16_t keycode);
@@ -55,7 +55,7 @@ action_t keymap_fn_to_action(uint16_t keycode);
 /* translates Fn keycode to action */
 action_t keymap_func_to_action(uint16_t keycode);
 
-extern const uint16_t keymaps[][MATRIX_ROWS][MATRIX_COLS];
+extern const uint32_t keymaps[][MATRIX_ROWS][MATRIX_COLS];
 extern const uint16_t fn_actions[];
 
 // Ability to use mods in layouts
@@ -256,10 +256,8 @@ extern const uint16_t fn_actions[];
 // L-ayer, T-ap - 256 keycode max, 16 layer max
 #define LT(layer, kc) (kc | 0x8000 | ((layer & 0xF) << 8))
 
-// For sending unicode codes.
-// You may not send codes over 1FFF -- this supports most of UTF8.
-// To have a key that sends out Œ, go UC(0x0152)
-#define UNICODE(n) (n | 0x9000)
+// Sending unicode codes.
+#define UNICODE(n) (0x10000000 | n )
 #define UC(n) UNICODE(n)
 
 // For tri-layer

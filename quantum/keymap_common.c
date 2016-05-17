@@ -44,14 +44,16 @@ extern keymap_config_t keymap_config;
     #include "unicode.h"
 #endif /* UNICODE_ENABLE */
 
-static action_t keycode_to_action(uint16_t keycode);
+static action_t keycode_to_action(uint32_t keycode);
 
 /* converts key to action */
 action_t action_for_key(uint8_t layer, keypos_t key)
 {
     // 16bit keycodes - important
-    uint16_t keycode = keymap_key_to_keycode(layer, key);
-
+    uint32_t thirty_two_code = keymap_key_to_keycode(layer, key);
+	uint16_t keycode = (thirty_two_code & 0xFFFF);
+	dprintf("32bits code = 0x%X --- \n",thirty_two_code);
+	dprintf("keycode = %u\n",keycode);
     switch (keycode) {
         case KC_FN0 ... KC_FN31:
             return keymap_fn_to_action(keycode);
@@ -119,7 +121,7 @@ action_t action_for_key(uint8_t layer, keypos_t key)
             }
             return keycode_to_action(KC_BSPACE);
         default:
-            return keycode_to_action(keycode);
+            return keycode_to_action(thirty_two_code);
     }
 }
 
@@ -137,10 +139,27 @@ void action_function(keyrecord_t *record, uint8_t id, uint8_t opt)
 {
 }
 
-/* translates keycode to action */
-static action_t keycode_to_action(uint16_t keycode)
+/* Unicode */
+__attribute__ ((weak))
+void action_unicode(uint16_t unicode)
 {
+}
+
+/* translates keycode to action */
+static action_t keycode_to_action(uint32_t thirty_two_code)
+{
+	uint16_t keycode = (thirty_two_code & 0xFFFF);
     action_t action;
+	if (thirty_two_code >= 0x10000000) {
+		switch (thirty_two_code) {
+			#ifdef UNICODE_ENABLE
+			case 0x10000000 ... 0x1000FFFF:
+				dprintf("case unicode +++++++++++\n");
+				action.code =  ACTION_UNICODE(keycode);
+				break;
+			#endif
+		}
+	} else {
     switch (keycode) {
         case KC_A ... KC_EXSEL:
         case KC_LCTRL ... KC_RGUI:
@@ -297,25 +316,19 @@ static action_t keycode_to_action(uint16_t keycode)
         case 0x8000 ... 0x8FFF:
             action.code = ACTION_LAYER_TAP_KEY((keycode >> 0x8) & 0xF, keycode & 0xFF);
             break;
-    #ifdef UNICODE_ENABLE
-        case 0x9000 ... 0x9FFF:
-            unicode = keycode & ~(0x9000);
-            action.code =  ACTION_FUNCTION_OPT(unicode & 0xFF, (unicode & 0xFF00) >> 8);
-            break;
-    #endif
         default:
             action.code = ACTION_NO;
             break;
-    }
+	}
+	}
     return action;
 }
 
 
 /* translates key to keycode */
-uint16_t keymap_key_to_keycode(uint8_t layer, keypos_t key)
+uint32_t keymap_key_to_keycode(uint8_t layer, keypos_t key)
 {
-    // Read entire word (16bits)
-    return pgm_read_word(&keymaps[(layer)][(key.row)][(key.col)]);
+    return pgm_read_dword(&keymaps[(layer)][(key.row)][(key.col)]);
 }
 
 /* translates Fn keycode to action */

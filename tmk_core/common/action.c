@@ -437,6 +437,13 @@ void process_action(keyrecord_t *record)
             action_function(record, action.func.id, action.func.opt);
             break;
 #endif
+#ifdef UNICODE_ENABLE
+		case ACT_UNICODE:
+			if (event.pressed) {
+				action_unicode(action.unicode.code);
+			}
+			break;
+#endif
         default:
             break;
     }
