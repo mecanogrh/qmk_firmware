@@ -39,8 +39,6 @@ uint16_t hex_to_keycode(uint8_t hex)
 
 void action_unicode(uint16_t unicode)
 {
-	dprintf("action_unicode");
-	//if (record->event.pressed) {
 	switch(input_mode) {
 		case UC_OSX:
 			register_code(KC_LALT);
@@ -75,7 +73,6 @@ void action_unicode(uint16_t unicode)
 			unregister_code(KC_LSFT);
 			break;
 	}
-	//}
 }
 void set_unicode_mode(uint8_t os_target)
 {

@@ -18,7 +18,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "unicode_targets.h"
 
 uint16_t hex_to_keycode(uint8_t hex);
-uint16_t unicode;
 
-void send_unicode(keyrecord_t *record, uint8_t id, uint8_t opt);
 void set_unicode_input_mode(uint8_t os_target);

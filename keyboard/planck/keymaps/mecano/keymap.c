@@ -68,7 +68,7 @@
 #define TAPPING_TOGGLE 2
 enum layers
 {
-	L_QW = 0, L_BE, L_CO, L_WO, L_DV, L_NUM, L_NAV, L_CHA, L_KLK, L_HRD, L_VNM, L_VVM,
+	L_QW_UNICODE = 0, L_QW, L_BE, L_CO, L_WO, L_DV, L_NUM, L_NAV, L_CHA, L_KLK, L_HRD, L_VNM, L_VVM,
 	L_TOTAL, // used for iteration to turn off layers
 };
 enum function_id
@@ -86,23 +86,23 @@ enum _macros
 {
 	I_PAR = 0, I_BRA, I_ACC, V_GWB, V_GWE, V_GBW, V_RPL, V_SWD, V_SLN,
 };
-#define LC(kc) ACTION_MODS_KEY(MOD_LCTL, KC_##kc)
-#define LA(kc) ACTION_MODS_KEY(MOD_LALT, KC_##kc)
-#define LS(kc) ACTION_MODS_KEY(MOD_LSFT, KC_##kc)
-#define LG(kc) ACTION_MODS_KEY(MOD_LGUI, KC_##kc)
-#define LAL(kc) ACTION_MODS_KEY(MOD_LCTL|MOD_LALT|MOD_LSFT|MOD_LGUI, KC_##kc)
-#define LSA(kc) ACTION_MODS_KEY(MOD_LSFT|MOD_LALT, KC_##kc)
-#define LSG(kc) ACTION_MODS_KEY(MOD_LSFT|MOD_LGUI, KC_##kc)
+#define LC(kc) LCTL(KC_##kc)
+#define LA(kc) LALT(KC_##kc)
+#define LS(kc) LSFT(KC_##kc)
+#define LG(kc) LGUI(KC_##kc)
+#define LSA(kc) LSFA(KC_##kc)
+#define LSG(kc) LSFG(KC_##kc)
+#define LFF(kc) HYPR(KC_##kc)
+#define ZOOM_IN LSFG(KC_EQL)
+#define ZOOM_OUT LG(MINS)
 #define TRNS KC_TRNS
 #define MS_AC0 KC_MS_ACCEL0
 #define KC_PGD KC_PGDOWN
 #define KC_PGU KC_PGUP
 #define KC_EUR LSA(2)
 #define KP_AST KC_KP_ASTERISK
-#define KC_ KC_NO
-// common commands definitions
-#define ZOOM_IN LSG(EQL)
-#define ZOOM_OUT LG(MINS)
+#define X(unicode) UNICODE(0x##unicode)
+#define EURO X(20AC)
 
 static uint8_t a_type, a_action, tap_mods, tap_key;
 static uint8_t backlight_on = 0;
@@ -122,6 +122,23 @@ backlight_config_t backlight_config;
 
 const uint32_t keymaps[][MATRIX_ROWS][MATRIX_COLS] PROGMEM =
 {
+	[L_QW_UNICODE] = {
+		/* Qwerty
+		 * .---------------------------------------------------------------------------------------------------.
+		 * |Tab Hyper|   q   |   w   |   e   |   r   |   t   |   y   |   u   |   i   |   o   |   p   |BSP Hyper|
+		 * |---------------------------------------------------------------------------------------------------|
+		 * |Esc  Ctrl|   a   |   s   |   d   |   f   |   g   |   h   |   j   |   k   |   l   |   ;   |Ent  Ctrl|
+		 * |---------------------------------------------------------------------------------------------------|
+		 * |(  Shift |   z   |   x   |   c   |   v   |   b   |   n   |   m   |   ,   |   .   |   /   |)  Shift |
+		 * |---------------------------------------------------------------------------------------------------|
+		 * | Option  | « CMD |   »   |   "   | ' NUM |SPC LS | = CHA | - HRD |   \   |   [   | ] CMD | Option  |
+		 * '---------------------------------------------------------------------------------------------------'
+		 */
+		{F(_LH),  KC_Q,  KC_W,    KC_E,      KC_R,   KC_T,   KC_Y,   KC_U,   KC_I,    KC_O,    KC_P,    F(_RH)},
+		{F(_ESC), KC_A,  KC_S,    KC_D,      KC_F,   KC_G,   KC_H,   KC_J,   KC_K,    KC_L,    KC_SCLN, F(_RC)},
+		{F(_LS),  KC_Z,  KC_X,    KC_C,      KC_V,   KC_B,   KC_N,   KC_M,   KC_COMM, KC_DOT,  KC_SLSH, F(_RS)},
+		{F(_LA),  F(_LG),X(00BB),LS(QUOTE),F(_NUM),F(_NAV),F(_CHA),F(_HRD),KC_BSLS, KC_LBRC, F(_RG),  F(_RA)}
+	},
 	[L_QW] = {
 		/* Qwerty
 		 * .---------------------------------------------------------------------------------------------------.
@@ -151,9 +168,9 @@ const uint32_t keymaps[][MATRIX_ROWS][MATRIX_COLS] PROGMEM =
 		 * |         |   ‹   |   ›   |       |       |       |       |       |   0   |       |       |         |
 		 * '---------------------------------------------------------------------------------------------------'
 		 */
-		{KC_TRNS, KC_,       KC_,     KC_EUR,  KC_,     KC_,     LA(Y),   KC_7,  KC_8, KC_9,  LA(3),   F(_CLK)},
-		{F(_ESC), UC(0x0061),UC(0x0FD8),UC(0x28E3),UC(0x60a0),KC_, KP_AST,  KC_4,  KC_5, KC_6,  LS(4),F(_NUMT)},
-		{KC_TRNS, KC_, KC_, KC_,     LA(4),   KC_,     LSA(4),  KC_1,    KC_2, KC_3,    KC_SLSH, KC_TRNS},
+		{KC_TRNS, KC_NO,  KC_NO,  UC(0x20AC),    KC_NO,   KC_NO,   LA(Y),   KC_7,    KC_8, KC_9,    LA(3),   F(_CLK)},
+		{F(_ESC), KC_NO,  KC_NO,  KC_NO,   KC_NO,   KC_NO,   KP_AST,  KC_4,    KC_5, KC_6,    LS(4),   F(_NUMT)},
+		{KC_TRNS, KC_NO,  KC_NO,  KC_NO,   LA(4),   KC_NO,   LSA(4),  KC_1,    KC_2, KC_3,    KC_SLSH, KC_TRNS},
 		{KC_TRNS, LSA(3), LSA(4), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_0, KC_TRNS, KC_TRNS, KC_TRNS}
 	},
 	[L_CHA] = {
@@ -168,9 +185,9 @@ const uint32_t keymaps[][MATRIX_ROWS][MATRIX_COLS] PROGMEM =
 		 * |         |       |       |       |       |       |       |       |       | [ | ] | { | } |         |
 		 * '---------------------------------------------------------------------------------------------------'
 		 */
-		{F(_SLK), KC_,   KC_,    LA(W),   LA(R),  LA(2),     LA(1),  LS(7),   LS(8),  KC_,     LA(6),  F(_CLK)},
+		{F(_SLK), KC_NO,   KC_NO,    LA(W),   LA(R),  LA(2),     LA(1),  LS(7),   LS(8),  KC_NO,     LA(6),  F(_CLK)},
 		{F(_ESC), LA(U), LA(I),  LA(GRV), LA(E),  LA(QUOTE), LA(8),  KC_TILD, LS(5),  LS(6),   LS(4), F(_CHAT)},
-		{M(I_PAR),LA(5), KC_,    LA(C),   KC_,    LA(Q),     LA(9),  LS(1),   LS(2),  LS(3),   LA(7), M(I_PAR)},
+		{M(I_PAR),LA(5), KC_NO,    LA(C),   KC_NO,    LA(Q),     LA(9),  LS(1),   LS(2),  LS(3),   LA(7), M(I_PAR)},
 		{KC_TRNS, KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS, KC_TRNS,KC_TRNS, KC_TRNS,M(I_BRA),M(I_ACC), KC_TRNS}
 	},
 	[L_NAV] = {
@@ -185,10 +202,10 @@ const uint32_t keymaps[][MATRIX_ROWS][MATRIX_COLS] PROGMEM =
 		 * |         | Zoom- | Zoom+ |       |       |       |       |       |       |       |       |         |
 		 * '---------------------------------------------------------------------------------------------------'
 		 */
-		{KC_TRNS, LC(F3), LC(F2),LSG(LBRC),LSG(RBRC),LC(F5),  LC(F6), LG(Z),  LG(X), LG(C),  LG(V),   KC_TRNS},
-		{F(_ESC), LSG(TAB),LG(TAB),LSA(TAB),LA(TAB), LC(F8),  KC_,    KC_DOWN,KC_UP, KC_LEFT,KC_RIGHT,F(_NAVT)},
-		{KC_TRNS, KC_,    KC_,   KC_,      KC_,      KC_,     KC_,    KC_PGD, KC_PGU,KC_HOME,KC_END,  KC_TRNS},
-		{KC_TRNS,ZOOM_OUT,ZOOM_IN,KC_TRNS, KC_TRNS,  KC_TRNS, KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS}
+		{KC_TRNS, LC(F3), LC(F2),LSG(LBRC),LSG(RBRC),LC(F5), LC(F6), LG(Z),  LG(X), LG(C),  LG(V),   KC_TRNS},
+		{F(_ESC), LSG(TAB),LG(TAB),LSA(TAB),LA(TAB), LC(F8), KC_NO, KC_DOWN,KC_UP, KC_LEFT,KC_RIGHT,F(_NAVT)},
+		{KC_TRNS, KC_NO,   KC_NO,  KC_NO,   KC_NO,   KC_NO,  KC_NO, KC_PGD, KC_PGU,KC_HOME,KC_END,  KC_TRNS},
+		{KC_TRNS,LG(MINS),LSG(EQL),KC_TRNS, KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS}
 	},
 	[L_HRD] = {
 		/* hardware control and mouse emulation
@@ -202,7 +219,7 @@ const uint32_t keymaps[][MATRIX_ROWS][MATRIX_COLS] PROGMEM =
 		 * |         |       | BLtog |       |       |       |       |       |       |       |       |  Power  |
 		 * '---------------------------------------------------------------------------------------------------'
 		 */
-		{F(_KLK), LAL(1), LAL(3), LAL(2), LAL(9), KC_TRNS, KC_MUTE, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,RESET},
+		{F(_KLK), LFF(1), LFF(3), LFF(2), LFF(9),KC_TRNS, KC_MUTE, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,RESET},
 		{F(_ESC), KC_F15, BL_INC, KC_BTN3,KC_BTN1,KC_BTN2, KC_VOLU, KC_MS_D, KC_MS_U, KC_MS_L,KC_MS_R,F(_HRDT)},
 		{KC_TRNS, KC_F14, BL_DEC, BL_STEP,KC_TRNS,KC_TRNS, KC_VOLD, KC_PGD,  KC_PGU,  KC_HOME, KC_END, KC_TRNS},
 		{KC_TRNS, KC_TRNS,BL_TOGG,KC_TRNS,KC_TRNS,KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_PWR}
@@ -213,10 +230,10 @@ const uint32_t keymaps[][MATRIX_ROWS][MATRIX_COLS] PROGMEM =
 		 * |Unlock   | note : triple tap to unlock                                                             |
 		 * '---------------------------------------------------------------------------------------------------'
 		 */
-		{KC_,     KC_, KC_, KC_, KC_, KC_, KC_, KC_, KC_, KC_, KC_, KC_},
-		{F(_KUL), KC_, KC_, KC_, KC_, KC_, KC_, KC_, KC_, KC_, KC_, KC_},
-		{KC_,     KC_, KC_, KC_, KC_, KC_, KC_, KC_, KC_, KC_, KC_, KC_},
-		{KC_,     KC_, KC_, KC_, KC_, KC_, KC_, KC_, KC_, KC_, KC_, KC_}
+		{KC_NO,     KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO},
+		{F(_KUL), KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO},
+		{KC_NO,     KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO},
+		{KC_NO,     KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO}
 	},
 	[L_VNM] = {
 		/* VIM normal mode
@@ -230,10 +247,10 @@ const uint32_t keymaps[][MATRIX_ROWS][MATRIX_COLS] PROGMEM =
 		 * |         |       | ParUp |       | Prev  | Right | NewLn | Up    | Down  | ParDn |       |         |
 		 * '---------------------------------------------------------------------------------------------------'
 		 */
-		{KC_, KC_,    M(V_GWB), M(V_GWE), KC_,    KC_,    LG(C), LG(Z),   F(_VNMT), KC_,   LG(V),    KC_},
-		{KC_, F(_VNAT), KC_,    KC_,    KC_,    KC_,    KC_, KC_DOWN, KC_UP,    KC_LEFT, KC_RIGHT, KC_},
-		{KC_, KC_,    LG(X),    KC_,    F(_VVMT), M(V_GBW), KC_, KC_,   KC_PGU,   KC_HOME, KC_END,   KC_},
-		{KC_, KC_,    KC_,    KC_,    KC_,    KC_,    KC_, KC_,   KC_,    KC_,   KC_,    KC_}
+		{KC_NO, KC_NO,   M(V_GWB),M(V_GWE),KC_NO,   KC_NO,   LG(C), LG(Z),   F(_VNMT),KC_NO,   LG(V),    KC_NO},
+		{KC_NO, F(_VNAT),KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO, KC_DOWN, KC_UP,   KC_LEFT, KC_RIGHT, KC_NO},
+		{KC_NO, KC_NO,   LG(X),   KC_NO,   F(_VVMT),M(V_GBW),KC_NO, KC_NO,   KC_PGU,  KC_HOME, KC_END,   KC_NO},
+		{KC_NO, KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO, KC_NO,   KC_NO,   KC_NO,   KC_NO,    KC_NO}
 	},
 	[L_VVM] = {
 		/* VIM visual mode
@@ -247,10 +264,10 @@ const uint32_t keymaps[][MATRIX_ROWS][MATRIX_COLS] PROGMEM =
 		 * |         |       | ParUp |       | Prev  | Right | NewLn | Up    | Down  | ParDn |       |         |
 		 * '---------------------------------------------------------------------------------------------------'
 		 */
-		{KC_,      KC_, M(V_GWB), M(V_GWE),KC_, KC_,    LG(C), LG(Z),   KC_,  KC_,   LG(V),    KC_},
-		{F(_VVMT), KC_, KC_,    KC_,   KC_, KC_,    KC_, KC_DOWN, KC_UP,  KC_LEFT, KC_RIGHT, KC_},
-		{KC_,      KC_, LG(X),    KC_,   KC_, M(V_GBW), KC_, KC_,   KC_PGU, KC_HOME, KC_END,   KC_},
-		{KC_,      KC_, KC_,    KC_,   KC_, KC_,    KC_, KC_,   KC_,  KC_,   KC_,    KC_}
+		{KC_NO,    KC_NO, M(V_GWB), M(V_GWE),KC_NO, KC_NO,    LG(C), LG(Z),   KC_NO,  KC_NO,   LG(V),    KC_NO},
+		{F(_VVMT), KC_NO, KC_NO,    KC_NO,   KC_NO, KC_NO,    KC_NO, KC_DOWN, KC_UP,  KC_LEFT, KC_RIGHT, KC_NO},
+		{KC_NO,    KC_NO, LG(X),    KC_NO,   KC_NO, M(V_GBW), KC_NO, KC_NO,   KC_PGU, KC_HOME, KC_END,   KC_NO},
+		{KC_NO,    KC_NO, KC_NO,    KC_NO,   KC_NO, KC_NO,    KC_NO, KC_NO,   KC_NO,  KC_NO,   KC_NO,    KC_NO}
 	},
 	[L_BE] = {
 		/* Bépo
@@ -264,10 +281,10 @@ const uint32_t keymaps[][MATRIX_ROWS][MATRIX_COLS] PROGMEM =
 		 * | Option  |   @   |   w   | ç HRD | f NUM | SP LS | = GUI | m CHA |   [   |   ]   |   \   | Option  |
 		 * '---------------------------------------------------------------------------------------------------'
 		 */
-		{F(_LH), KC_B,  KC_,   KC_P,    KC_O,    KC_,    KC_,     KC_V,   KC_D,    KC_L,    KC_Z, F(_RH)},
+		{F(_LH), KC_B,  KC_NO,   KC_P,    KC_O,    KC_NO,    KC_NO,     KC_V,   KC_D,    KC_L,    KC_Z, F(_RH)},
 		{F(_LC), KC_A,  KC_U,  KC_I,    KC_E,    KC_COMM, KC_C,   KC_T,   KC_S,    KC_R,    KC_N, F(_RC)},
-		{F(_LS), KC_,   KC_,   KC_Y,    KC_X,    KC_DOT,  KC_K,   KC_,    KC_Q,    KC_G,    KC_H, F(_RS)},
-		{F(_LA), KC_W,  KC_, F(_HRD), F(_NUM), F(_NAV), F(_RG), F(_CHA), KC_LBRC, KC_RBRC, KC_BSLS, F(_RA)}
+		{F(_LS), KC_NO,   KC_NO,   KC_Y,    KC_X,    KC_DOT,  KC_K,   KC_NO,    KC_Q,    KC_G,    KC_H, F(_RS)},
+		{F(_LA), KC_W,  KC_NO, F(_HRD), F(_NUM), F(_NAV), F(_RG), F(_CHA), KC_LBRC, KC_RBRC, KC_BSLS, F(_RA)}
 	},
 	[L_CO] = {
 		/* Colemak
@@ -284,7 +301,7 @@ const uint32_t keymaps[][MATRIX_ROWS][MATRIX_COLS] PROGMEM =
 		{KC_TAB,  KC_Q,  KC_W, KC_F,    KC_P,    KC_G,    KC_J,   KC_L,    KC_U,    KC_Y,    KC_SCLN, KC_BSPC},
 		{KC_ESC,  KC_A,  KC_R, KC_S,    KC_T,    KC_D,    KC_H,   KC_N,    KC_E,    KC_I,    KC_O,    KC_QUOT},
 		{KC_LSFT, KC_Z,  KC_X, KC_C,    KC_V,    KC_B,    KC_K,   KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ENT },
-		{F(_LA),  KC_,   KC_,  F(_HRD), F(_NUM), F(_NAV), F(_RG), F(_CHA), KC_LBRC, KC_RBRC, KC_BSLS, F(_RA)}
+		{F(_LA),  KC_NO, KC_NO,F(_HRD), F(_NUM), F(_NAV), F(_RG), F(_CHA), KC_LBRC, KC_RBRC, KC_BSLS, F(_RA)}
 	},
 	[L_WO] = {
 		/* Workman
@@ -301,7 +318,7 @@ const uint32_t keymaps[][MATRIX_ROWS][MATRIX_COLS] PROGMEM =
 		{F(_LH), KC_Q,   KC_D,  KC_R,    KC_W,    KC_B,    KC_J,   KC_F,   KC_U,    KC_P,    KC_SCLN, F(_RH)},
 		{F(_LC), KC_A,   KC_S,  KC_H,    KC_T,    KC_G,    KC_Y,   KC_N,   KC_E,    KC_O,    KC_I,    F(_RC)},
 		{F(_LS), KC_Z,   KC_X,  KC_M,    KC_C,    KC_V,    KC_K,   KC_L,   KC_COMM, KC_DOT,  KC_SLSH, F(_RS)},
-		{F(_LA), KC_,  KC_, F(_HRD), F(_NUM), F(_NAV), F(_RG), F(_CHA),KC_LBRC, KC_RBRC, KC_BSLS, F(_RA)}
+		{F(_LA), KC_NO,  KC_NO, F(_HRD), F(_NUM), F(_NAV), F(_RG), F(_CHA),KC_LBRC, KC_RBRC, KC_BSLS, F(_RA)}
 	},
 	[L_DV] = {
 		/* Dvorak
@@ -318,7 +335,7 @@ const uint32_t keymaps[][MATRIX_ROWS][MATRIX_COLS] PROGMEM =
 		{KC_TAB,  KC_QUOT, KC_COMM, KC_DOT,  KC_P,   KC_Y,   KC_F,  KC_G,   KC_C,    KC_R,    KC_L,    KC_BSPC},
 		{KC_ESC,  KC_A,    KC_O,    KC_E,    KC_U,   KC_I,   KC_D,  KC_H,   KC_T,    KC_N,    KC_S,    KC_SLSH},
 		{KC_LSFT, KC_SCLN, KC_Q,    KC_J,    KC_K,   KC_X,   KC_B,  KC_M,   KC_W,    KC_V,    KC_Z,    KC_ENT },
-		{F(_LA),  KC_,     KC_,     F(_HRD), F(_NUM),F(_NAV),F(_RG),F(_CHA),KC_LBRC, KC_RBRC, KC_BSLS, F(_RA)}
+		{F(_LA),  KC_NO,   KC_NO,   F(_HRD), F(_NUM),F(_NAV),F(_RG),F(_CHA),KC_LBRC, KC_RBRC, KC_BSLS, F(_RA)}
 	}
 };
 const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
@@ -414,7 +431,6 @@ void action_process(keyrecord_t *record, uint8_t ht, uint8_t hm, uint8_t tm, uin
 {
 	keyevent_t event = record->event;
 	if (event.pressed) {
-		dprintf(">>>>>>>> pressed\n");
 		if (record->tap.count>0) {
 			if (ht == _CAPSLOCK_TOGGLE) {
 				de_mods();
@@ -466,7 +482,6 @@ void action_process(keyrecord_t *record, uint8_t ht, uint8_t hm, uint8_t tm, uin
 			}
 		}
 	} else {
-		dprintf("released >>>>>>>>\n");
 		if (ht == _LAYER_TOGGLE && hm != 0 && record->tap.count > 0) {
 			if (hm == L_VVM) {
 				if (active_layer == L_VVM) {
@@ -614,8 +629,9 @@ void action_function(keyrecord_t *record, uint8_t id, uint8_t opt)
 		case _LG:
 			a_type=_MOD_MOMENTARY;
 			a_action=MOD_BIT(KC_LGUI); // layer id or mods
-			tap_mods=MOD_BIT(KC_RALT); // single tap mods
-			tap_key=KC_BSLS; // single tap
+			//tap_mods=MOD_BIT(KC_RALT); // single tap mods
+			//tap_key=KC_BSLS; // single tap
+			tap_key=X(00AB); // single tap
 			break;
 		case _RG:
 			a_type=_MOD_MOMENTARY;

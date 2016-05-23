@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* NOTE: Not portable. Bit field order depends on implementation */
 typedef union {
-    uint32_t raw;
+    uint16_t raw;
     struct {
         bool swap_control_capslock:1;
         bool capslock_to_control:1;
@@ -66,6 +66,9 @@ extern const uint16_t fn_actions[];
 #define HYPR(kc) kc | 0x0F00
 #define MEH(kc) kc  | 0x0700
 #define LCAG(kc) kc  | 0x0D00 // Modifier Ctrl Alt and GUI
+#define LALG(kc) kc | 0x0C00 // Alt and GUI
+#define LSFA(kc) kc | 0x0600 // Shift and Alt
+#define LSFG(kc) kc | 0x0A00 // Shift and GUI
 
 #define MOD_HYPR 0xf
 #define MOD_MEH 0x7
